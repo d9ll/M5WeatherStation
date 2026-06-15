@@ -108,8 +108,11 @@
 
 ## 📁 Структура проекта
 M5WeatherStation/
+
 ├── M5WeatherStation.ino # Основной код
+
 ├── html_pages.h # HTML страницы
+
 └── README.md # Инструкция
 
 ---
