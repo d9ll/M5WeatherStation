@@ -1,0 +1,51 @@
+name: Build M5WeatherStation
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup PlatformIO
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install PlatformIO
+        run: pip install platformio
+      
+      - name: Build
+        run: pio run
+      
+      - name: Upload firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware
+          path: .pio/build/m5stick-s3/firmware.bin
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: .pio/build/m5stick-s3/firmware.bin
+          name: M5WeatherStation ${{ github.ref_name }}
+          body: |
+            ## Прошивка для M5Stick S3
+            
+            ### Прошивка:
+            1. Скачай `firmware.bin`
+            2. Открой [ESP32 Flash Tool](https://espressif.github.io/esptool-js/)
+            3. Выбери M5Stick S3
+            4. Загрузи bin и нажми Program
+            
+            ### Настройка:
+            - WiFi: `M5WeatherStation` | Пароль: `weather123`
+            - Открой `192.168.4.1`
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
