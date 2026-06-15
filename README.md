@@ -1,3 +1,10 @@
+[![Build Status](https://github.com/d9ll/M5WeatherStation/actions/workflows/compile.yml/badge.svg)](https://github.com/d9ll/M5WeatherStation/actions/workflows/compile.yml)
+[![GitHub release](https://img.shields.io/github/v/release/d9ll/M5WeatherStation)](https://github.com/d9ll/M5WeatherStation/releases)
+[![GitHub downloads](https://img.shields.io/github/downloads/d9ll/M5WeatherStation/total)](https://github.com/d9ll/M5WeatherStation/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+
+
 # 🌤️ M5WeatherStation
 
 Умная метеостанция на M5Stick S3 с веб-интерфейсом для настройки WiFi и выбора города. Погода берётся из интернета через бесплатный сервис wttr.in — никаких датчиков не нужно.
