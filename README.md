@@ -1,4 +1,4 @@
-![M5Stick S3](https://shields.io)
+
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
