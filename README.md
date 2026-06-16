@@ -1,5 +1,5 @@
+![M5Stick S3](https://shields.io)
 
-[![GitHub downloads](https://img.shields.io/github/downloads/d9ll/M5WeatherStation/total)](https://github.com/d9ll/M5WeatherStation/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 
