@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M5WeatherStation — умная метеостанция</title>
-    <meta name="description" content="M5WeatherStation — умная метеостанция на базе M5Stick S3 с веб-интерфейсом и прогнозом погоды.">
+    <title>M5WeatherStation</title>
     <style>
-        /* ===== RESET & BASE ===== */
+        /* ===== БАЗА ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
@@ -32,49 +35,140 @@
         a {
             color: #7a8cff;
             text-decoration: none;
-            transition: color 0.2s;
         }
 
-        a:hover {
-            color: #a8b4ff;
+        /* ===== МЕНЮ (современное) ===== */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(11, 11, 18, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 0 24px;
+            height: 62px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        nav .logo {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #7a8cff, #a78bfa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        nav .logo span {
+            font-size: 24px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #aaaac0;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #7a8cff, #a78bfa);
+            transition: all 0.3s;
+            transform: translateX(-50%);
+            border-radius: 4px;
+        }
+
+        .nav-links a:hover {
+            color: #f0f0ff;
+        }
+
+        .nav-links a:hover::after {
+            width: 60%;
+        }
+
+        .nav-links .btn-outline {
+            background: transparent;
+            border: 1px solid #3a3a5a;
+            padding: 6px 20px;
+            border-radius: 40px;
+            transition: all 0.3s;
+        }
+
+        .nav-links .btn-outline:hover {
+            background: #7a8cff;
+            border-color: #7a8cff;
+            color: #fff;
+        }
+
+        .nav-links .btn-outline:hover::after {
+            width: 0;
+        }
+
+        /* Бургер (мобилки) */
+        .burger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 4px;
+            background: none;
+            border: none;
+        }
+
+        .burger span {
+            display: block;
+            width: 26px;
+            height: 2.5px;
+            background: #c8c8e0;
+            border-radius: 4px;
+            transition: all 0.3s;
+            transform-origin: center;
+        }
+
+        .burger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .burger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .burger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
         }
 
         /* ===== HEADER ===== */
         header {
-            background: linear-gradient(145deg, #12121f 0%, #1a1a2e 50%, #0f1a2e 100%);
-            padding: 48px 0 32px;
             text-align: center;
-            border-bottom: 1px solid #28283a;
-            position: relative;
-            overflow: hidden;
-        }
-
-        header::after {
-            content: '';
-            position: absolute;
-            top: -60%;
-            left: -30%;
-            width: 160%;
-            height: 160%;
-            background: radial-gradient(circle at 30% 40%, rgba(102, 126, 234, 0.06) 0%, transparent 60%);
-            pointer-events: none;
-        }
-
-        header .container {
-            position: relative;
-            z-index: 1;
-        }
-
-        .logo {
-            font-size: 56px;
-            display: block;
-            margin-bottom: 4px;
+            padding: 50px 0 30px;
+            background: radial-gradient(ellipse at 50% 0%, #14142a 0%, transparent 70%);
         }
 
         header h1 {
-            font-size: 40px;
+            font-size: 42px;
             font-weight: 700;
-            background: linear-gradient(135deg, #7a8cff 0%, #a78bfa 50%, #7a8cff 100%);
+            background: linear-gradient(135deg, #7a8cff, #a78bfa, #7a8cff);
             background-size: 200% 200%;
             -webkit-background-clip: text;
             background-clip: text;
@@ -83,14 +177,18 @@
         }
 
         @keyframes gradShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
         }
 
         .subtitle {
             font-size: 17px;
-            color: #9999b0;
+            color: #8888aa;
             margin-top: 2px;
         }
 
@@ -107,10 +205,33 @@
             border-radius: 6px;
         }
 
-        /* ===== SECTIONS ===== */
+        /* ===== СЕКЦИИ ===== */
         section {
             padding: 44px 0;
             border-bottom: 1px solid #1a1a2a;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.6s ease forwards;
+        }
+
+        section:nth-child(2) {
+            animation-delay: 0.05s;
+        }
+        section:nth-child(3) {
+            animation-delay: 0.10s;
+        }
+        section:nth-child(4) {
+            animation-delay: 0.15s;
+        }
+        section:nth-child(5) {
+            animation-delay: 0.20s;
+        }
+
+        @keyframes fadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         section:last-of-type {
@@ -121,9 +242,8 @@
             font-size: 24px;
             font-weight: 600;
             color: #c8c8e8;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             text-align: center;
-            letter-spacing: -0.3px;
         }
 
         .section-desc {
@@ -134,22 +254,22 @@
             font-size: 15px;
         }
 
-        /* ===== PHOTO ===== */
+        /* ===== ФОТО ===== */
         .photo-wrap {
             text-align: center;
         }
 
         .photo-wrap img {
             max-width: 100%;
-            max-height: 340px;
+            max-height: 350px;
             border-radius: 18px;
             border: 1px solid #2a2a40;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
-            transition: transform 0.3s;
+            box-shadow: 0 12px 44px rgba(0, 0, 0, 0.7);
+            transition: transform 0.4s ease;
         }
 
         .photo-wrap img:hover {
-            transform: scale(1.01);
+            transform: scale(1.02) rotate(-0.5deg);
         }
 
         .photo-caption {
@@ -158,32 +278,32 @@
             margin-top: 8px;
         }
 
-        /* ===== FEATURES ===== */
+        /* ===== ФИЧИ ===== */
         .features {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 14px;
-            margin-top: 4px;
         }
 
         .feature {
             background: #13131f;
-            padding: 18px 12px 16px;
+            padding: 20px 14px 16px;
             border-radius: 16px;
             text-align: center;
             border: 1px solid #24243a;
-            transition: border-color 0.25s, transform 0.2s;
+            transition: all 0.3s;
         }
 
         .feature:hover {
-            border-color: #4a4a7a;
-            transform: translateY(-3px);
+            border-color: #5a5a8a;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
         }
 
         .feature .icon {
-            font-size: 28px;
+            font-size: 30px;
             display: block;
-            margin-bottom: 2px;
+            margin-bottom: 4px;
         }
 
         .feature h3 {
@@ -197,7 +317,7 @@
             color: #8888aa;
         }
 
-        /* ===== HOW TO ===== */
+        /* ===== ИНСТРУКЦИЯ ===== */
         .steps {
             list-style: none;
             padding: 0;
@@ -241,10 +361,10 @@
             font-family: 'SF Mono', 'Consolas', monospace;
         }
 
-        /* ===== DOWNLOAD ===== */
+        /* ===== КНОПКА СКАЧАТЬ ===== */
         .download-wrap {
             text-align: center;
-            padding: 8px 0 4px;
+            padding: 4px 0;
         }
 
         .download-btn {
@@ -258,18 +378,18 @@
             font-size: 18px;
             font-weight: 600;
             border: none;
-            box-shadow: 0 4px 24px rgba(102, 126, 234, 0.35);
-            transition: transform 0.2s, box-shadow 0.25s;
+            box-shadow: 0 4px 28px rgba(102, 126, 234, 0.35);
+            transition: all 0.3s;
         }
 
         .download-btn:hover {
-            transform: scale(1.03);
-            box-shadow: 0 8px 36px rgba(102, 126, 234, 0.5);
+            transform: scale(1.04);
+            box-shadow: 0 8px 44px rgba(102, 126, 234, 0.55);
             color: #fff;
         }
 
         .download-btn:active {
-            transform: scale(0.97);
+            transform: scale(0.96);
         }
 
         .download-hint {
@@ -282,7 +402,7 @@
             color: #7a8cff;
         }
 
-        /* ===== LINKS ===== */
+        /* ===== ССЫЛКИ ===== */
         .links {
             display: flex;
             justify-content: center;
@@ -295,21 +415,22 @@
             align-items: center;
             gap: 6px;
             background: #13131f;
-            padding: 10px 22px;
+            padding: 10px 24px;
             border-radius: 40px;
             color: #c8c8e0;
             border: 1px solid #28283e;
             font-size: 14px;
-            transition: border-color 0.2s, background 0.2s;
+            transition: all 0.3s;
         }
 
         .links a:hover {
             border-color: #5a5a8a;
             background: #1a1a2e;
-            color: #e8e8f0;
+            color: #f0f0ff;
+            transform: translateY(-2px);
         }
 
-        /* ===== FOOTER ===== */
+        /* ===== ПОДВАЛ ===== */
         footer {
             text-align: center;
             padding: 28px 0 32px;
@@ -319,48 +440,106 @@
             margin-top: auto;
         }
 
-        footer a {
-            color: #6a7acc;
-        }
-
         .footer-links {
             display: flex;
             justify-content: center;
             gap: 16px;
             margin-top: 6px;
             flex-wrap: wrap;
-            font-size: 13px;
         }
 
         .footer-links a {
             color: #55556e;
+            transition: color 0.3s;
         }
 
         .footer-links a:hover {
             color: #8888b0;
         }
 
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 640px) {
-            header h1 { font-size: 30px; }
-            .logo { font-size: 42px; }
-            .features { grid-template-columns: 1fr 1fr; }
-            .photo-wrap img { max-height: 220px; }
-            .download-btn { padding: 14px 28px; font-size: 16px; }
-            .links a { padding: 8px 16px; font-size: 13px; }
+        /* ===== АДАПТИВ ===== */
+        @media (max-width: 700px) {
+            .nav-links {
+                position: absolute;
+                top: 62px;
+                left: 0;
+                right: 0;
+                background: rgba(11, 11, 18, 0.97);
+                backdrop-filter: blur(14px);
+                flex-direction: column;
+                padding: 16px 24px 24px;
+                gap: 4px;
+                border-bottom: 1px solid #1a1a2a;
+                transform: translateY(-120%);
+                transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+                border-radius: 0 0 20px 20px;
+            }
+
+            .nav-links.open {
+                transform: translateY(0);
+            }
+
+            .nav-links a {
+                width: 100%;
+                text-align: center;
+                padding: 12px 0;
+            }
+
+            .burger {
+                display: flex;
+            }
+
+            header h1 {
+                font-size: 30px;
+            }
+            .features {
+                grid-template-columns: 1fr 1fr;
+            }
+            .photo-wrap img {
+                max-height: 220px;
+            }
+            .download-btn {
+                padding: 14px 28px;
+                font-size: 16px;
+            }
+            .links a {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
         }
 
-        @media (max-width: 400px) {
-            .features { grid-template-columns: 1fr; }
+        @media (max-width: 420px) {
+            .features {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
 
+    <!-- ===== МЕНЮ ===== -->
+    <nav>
+        <div class="logo">
+            <span>🌤️</span> M5Weather
+        </div>
+
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#about">О проекте</a></li>
+            <li><a href="#features">Возможности</a></li>
+            <li><a href="#setup">Как запустить</a></li>
+            <li><a href="#download" class="btn-outline">⬇️ Скачать</a></li>
+        </ul>
+
+        <button class="burger" id="burgerBtn" aria-label="Меню">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </nav>
+
     <!-- ===== HEADER ===== -->
     <header>
         <div class="container">
-            <span class="logo">🌤️</span>
             <h1>M5WeatherStation</h1>
             <p class="subtitle">Умная метеостанция на базе M5Stick S3</p>
             <div class="badges">
@@ -377,39 +556,41 @@
         </div>
     </header>
 
-    <!-- ===== MAIN ===== -->
+    <!-- ===== ОСНОВНОЕ ===== -->
     <main>
         <div class="container">
 
             <!-- ФОТО -->
-            <section class="photo-wrap">
-                <img src="image.png" alt="M5Stick S3 показывает погоду" loading="lazy">
-                <p class="photo-caption">📸 M5Stick S3 с интерфейсом метеостанции</p>
+            <section>
+                <div class="photo-wrap">
+                    <img src="image.png" alt="M5Stick S3 с погодой" loading="lazy">
+                    <p class="photo-caption">📸 M5Stick S3 показывает погоду в реальном времени</p>
+                </div>
             </section>
 
-            <!-- ОПИСАНИЕ -->
-            <section>
-                <h2>📟 Что это?</h2>
+            <!-- О ПРОЕКТЕ -->
+            <section id="about">
+                <h2>📟 О проекте</h2>
                 <p class="section-desc">
                     M5WeatherStation — это компактная метеостанция на <strong>M5Stick S3</strong>.
-                    Показывает <strong>температуру, влажность, давление, ветер</strong> и прогноз погоды
-                    в выбранном городе. Всё через интернет — никаких датчиков.
+                    Показывает <strong>температуру, влажность, давление, скорость ветра</strong> и прогноз погоды
+                    в выбранном городе. Всё работает через интернет — никаких датчиков.
                 </p>
             </section>
 
-            <!-- ФИЧИ -->
-            <section>
+            <!-- ВОЗМОЖНОСТИ -->
+            <section id="features">
                 <h2>✨ Возможности</h2>
                 <div class="features">
                     <div class="feature">
                         <span class="icon">📡</span>
                         <h3>WiFi настройка</h3>
-                        <p>через браузер</p>
+                        <p>через браузер, без кода</p>
                     </div>
                     <div class="feature">
                         <span class="icon">🌍</span>
                         <h3>Любой город</h3>
-                        <p>выбери в интерфейсе</p>
+                        <p>меняй в один клик</p>
                     </div>
                     <div class="feature">
                         <span class="icon">🎨</span>
@@ -435,7 +616,7 @@
             </section>
 
             <!-- ИНСТРУКЦИЯ -->
-            <section>
+            <section id="setup">
                 <h2>🚀 Как запустить?</h2>
                 <ul class="steps">
                     <li>
@@ -461,8 +642,8 @@
                 </ul>
             </section>
 
-            <!-- СКАЧАТЬ ПРОШИВКУ -->
-            <section>
+            <!-- СКАЧАТЬ -->
+            <section id="download">
                 <h2>⬇️ Скачать прошивку</h2>
                 <p class="section-desc">Последняя стабильная версия для M5Stick S3</p>
                 <div class="download-wrap">
@@ -482,14 +663,13 @@
                     <a href="https://github.com/d9ll/M5WeatherStation" target="_blank">📂 GitHub</a>
                     <a href="https://github.com/d9ll/M5WeatherStation/releases" target="_blank">📦 Релизы</a>
                     <a href="https://github.com/d9ll/M5WeatherStation/issues" target="_blank">🐛 Сообщить о проблеме</a>
-                    <a href="https://github.com/d9ll/M5WeatherStation/blob/main/CHANGELOG.md" target="_blank">📋 Changelog</a>
                 </div>
             </section>
 
         </div>
     </main>
 
-    <!-- ===== FOOTER ===== -->
+    <!-- ===== ПОДВАЛ ===== -->
     <footer>
         <div class="container">
             <p>Made with ❤️ for M5Stick S3</p>
@@ -499,6 +679,43 @@
             </div>
         </div>
     </footer>
+
+    <!-- ===== СКРИПТ ===== -->
+    <script>
+        // Бургер
+        const burger = document.getElementById('burgerBtn');
+        const nav = document.getElementById('navLinks');
+
+        burger.addEventListener('click', () => {
+            burger.classList.toggle('active');
+            nav.classList.toggle('open');
+        });
+
+        // Закрываем меню при клике на ссылку
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                burger.classList.remove('active');
+                nav.classList.remove('open');
+            });
+        });
+
+        // Плавное появление секций
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('section').forEach(section => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(24px)';
+            section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(section);
+        });
+    </script>
 
 </body>
 </html>
