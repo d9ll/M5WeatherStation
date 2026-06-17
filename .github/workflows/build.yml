@@ -20,15 +20,15 @@ jobs:
 
       - name: 📦 Install M5Stack core
         run: |
-          arduino-cli core update-index
-          arduino-cli core install m5stack:esp32@3.3.7 --additional-urls https://static-cdn.m5stack.com/resource/arduino/package_m5stack_index.json
+          arduino-cli core update-index --additional-urls https://static-cdn.m5stack.com/resource/arduino/package_m5stack_index.json
+          arduino-cli core install m5stack:esp32 --additional-urls https://static-cdn.m5stack.com/resource/arduino/package_m5stack_index.json
 
       - name: 📚 Install libraries
         run: |
           arduino-cli lib install "M5Unified"
           arduino-cli lib install "ArduinoJson"
 
-      - name: 🔨 Compile firmware
+      - name: 🔨 Compile firmware for M5Stick S3
         run: |
           arduino-cli compile --fqbn m5stack:esp32:m5sticks3 --build-property build.extra_flags="-DARDUINO_USB_CDC_ON_BOOT=1" --output-dir ./build
 
@@ -43,7 +43,7 @@ jobs:
         run: |
           mkdir -p release
           cp ./build/*.bin release/firmware.bin
-          echo "✅ Built for M5Stick S3 from commit ${{ github.sha }}" > release/build-info.txt
+          echo "✅ Built for M5Stick S3" > release/build-info.txt
 
       - name: 🚀 Create Release
         if: startsWith(github.ref, 'refs/tags/v')
